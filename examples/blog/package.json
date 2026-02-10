@@ -1,9 +1,9 @@
 {
-  "name": "beul-example-blog",
+  "name": "@beul-ssg/example-blog",
   "private": true,
   "type": "module",
   "dependencies": {
     "beul": "workspace:*",
-    "beul-theme-default": "workspace:*"
+    "@beul-ssg/theme-default": "workspace:*"
   }
 }

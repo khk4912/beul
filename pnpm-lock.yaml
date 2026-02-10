@@ -10,12 +10,12 @@ importers:
 
   examples/blog:
     dependencies:
+      '@beul-ssg/theme-default':
+        specifier: workspace:*
+        version: link:../../packages/theme-default
       beul:
         specifier: workspace:*
         version: link:../../packages/core
-      beul-theme-default:
-        specifier: workspace:*
-        version: link:../../packages/theme-default
 
   packages/core:
     dependencies:

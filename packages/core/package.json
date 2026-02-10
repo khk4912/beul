@@ -18,6 +18,8 @@
   ],
   "keywords": [
     "static-site",
+    "static-site-generator",
+    "ssg",
     "mdx"
   ],
   "license": "MIT",
