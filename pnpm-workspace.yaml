@@ -3,4 +3,8 @@ packages:
   - examples/*
 
 onlyBuiltDependencies:
+  - es5-ext
   - unrs-resolver
+
+overrides:
+  beul: link:../../Library/pnpm/global/5/node_modules/beul
