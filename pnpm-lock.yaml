@@ -6,7 +6,18 @@ settings:
 
 importers:
 
-  .:
+  .: {}
+
+  examples/blog:
+    dependencies:
+      beul:
+        specifier: workspace:*
+        version: link:../../packages/core
+      beul-theme-default:
+        specifier: workspace:*
+        version: link:../../packages/theme-default
+
+  packages/core:
     dependencies:
       '@mdx-js/mdx':
         specifier: ^3.1.1
@@ -60,6 +71,12 @@ importers:
       typescript-eslint:
         specifier: ^8.55.0
         version: 8.55.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3)
+
+  packages/theme-default:
+    dependencies:
+      react:
+        specifier: ^19.2.4
+        version: 19.2.4
 
 packages:
 
