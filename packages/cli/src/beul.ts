@@ -1,9 +1,11 @@
+#!/usr/bin/env node
+
 import fs from 'fs/promises'
 import { input } from '@inquirer/prompts'
 import { Command } from 'commander'
 import chalk from 'chalk'
 import path from 'path'
-import pkg from '../../package.json' with { type: 'json'}
+import pkg from '../package.json' with { type: 'json'}
 import { exit } from 'process'
 
 const VERSION = pkg.version

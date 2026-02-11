@@ -1,7 +1,7 @@
 {
-  "name": "beul",
+  "name": "@beul-ssg/core",
   "version": "0.1.0",
-  "description": "Beul core engine",
+  "description": "Beul core build engine",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
@@ -14,8 +14,7 @@
     ".": "./dist/index.js"
   },
   "files": [
-    "dist",
-    "template"
+    "dist"
   ],
   "keywords": [
     "static-site",
@@ -23,9 +22,6 @@
     "ssg",
     "mdx"
   ],
-  "bin": {
-    "beul": "./dist/cli/beul.js"
-  },
   "license": "MIT",
   "devDependencies": {
     "@eslint/js": "^9.39.2",
@@ -43,10 +39,7 @@
     "typescript-eslint": "^8.55.0"
   },
   "dependencies": {
-    "@inquirer/prompts": "^8.2.0",
     "@mdx-js/mdx": "^3.1.1",
-    "chalk": "^5.6.2",
-    "commander": "^14.0.3",
     "fs-extra": "^11.3.3",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
