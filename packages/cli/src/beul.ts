@@ -11,8 +11,8 @@ import { exit } from 'process'
 const VERSION = pkg.version
 const program = new Command()
 
-const PACKAGE_ROOT = path.resolve(import.meta.dirname, '../../')
-const TEMPLATE_DIR = path.join(PACKAGE_ROOT, 'template')
+const CLI_ROOT = path.resolve(import.meta.dirname, '../')
+const TEMPLATE_DIR = path.join(CLI_ROOT, 'template')
 
 type PackageManager = 'npm' | 'pnpm' | 'yarn' | 'bun'
 function getUserAgent (): PackageManager {
