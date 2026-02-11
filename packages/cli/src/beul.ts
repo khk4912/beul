@@ -77,4 +77,12 @@ program
     }
   })
 
+program
+  .command('dev')
+  .description('TBD')
+
+program
+  .command('build')
+  .description('TBD')
+
 await program.parseAsync(process.argv)
