@@ -1,4 +1,4 @@
-import { loadConfig } from './config.js'
+import { defineConfig } from './config.js'
 import { build } from './bulid.js'
 
-export { loadConfig, build }
+export { defineConfig, build }
