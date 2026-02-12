@@ -15,6 +15,8 @@ const CLI_ROOT = path.resolve(import.meta.dirname, '../')
 const TEMPLATE_DIR = path.join(CLI_ROOT, 'template')
 
 type PackageManager = 'npm' | 'pnpm' | 'yarn' | 'bun'
+
+// pnpm create, npx 등으로 실행 시 pkg manager 감지
 function getUserAgent (): PackageManager {
   const userAgent = process.env.npm_config_user_agent
   if (!userAgent) return 'npm' // 실패 시 npm

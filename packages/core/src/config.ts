@@ -64,7 +64,7 @@ function normalizeConfig (raw: unknown, configPath: string): BeulConfig {
 /**
  * Utility function to define Beul configuration with type safety.
  *
- * @param config Beul configuratino object
+ * @param {Partial<BeulConfig>} config Beul configuration object
  * @example
  * ```ts
  * import { defineConfig } from '@beul-ssg/core'
@@ -75,7 +75,7 @@ function normalizeConfig (raw: unknown, configPath: string): BeulConfig {
  * })
  * ```
  */
-export function defineConfig (config: BeulConfig) {
+export function defineConfig (config: Partial<BeulConfig>): Partial<BeulConfig> {
   return config
 }
 
