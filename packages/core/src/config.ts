@@ -3,7 +3,7 @@ import path from 'path'
 
 import { createJiti } from 'jiti'
 import type { BeulConfig } from './types/config.ts'
-import { ConfigNotFound } from './errors /config.js'
+import { ConfigNotFound } from './errors/config.js'
 
 // 기본 설정
 const DEFAULT_CONFIG: BeulConfig = {
