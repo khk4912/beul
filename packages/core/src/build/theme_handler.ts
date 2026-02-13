@@ -2,9 +2,9 @@ import path from 'path'
 import React from 'react'
 import type { ComponentType } from 'react'
 
-import type { BeulTheme, BeulThemeProps } from './types/theme.js'
-import type { PageType, RouteEntry } from './types/route.js'
-import type { BeulConfig } from './types/config.js'
+import type { BeulTheme, BeulThemeProps } from '../types/theme.js'
+import type { PageType, RouteEntry } from '../types/route.js'
+import type { BeulConfig } from '../types/config.js'
 
 // Page Type
 type GenericPageComponent = ComponentType<{ beulConfig: BeulConfig, route: RouteEntry, children?: React.ReactNode }>
