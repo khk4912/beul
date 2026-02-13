@@ -1,15 +1,17 @@
 import fs from 'fs-extra'
 import path from 'path'
-import { pathToFileURL } from 'url'
-import React from 'react'
 
-import { evaluate } from '@mdx-js/mdx'
-import { renderToStaticMarkup } from 'react-dom/server'
-import * as runtime from 'react/jsx-runtime'
-
-import { loadConfig } from './config.js'
-import { loadTheme, resolvePageComponent } from './theme_handler.js'
-import type { PageType, RouteEntry } from './types/route.js'
+import { loadConfig } from '../config.js'
+import { loadTheme } from '../theme_handler.js'
+import type { PageType, RouteEntry } from '../types/route.js'
+import {
+  renderArticlePage,
+  renderHomePage,
+  renderNotFoundPage,
+  renderPostsPage,
+  renderTagsPage,
+  type RenderContext
+} from './renderers.js'
 
 // 파일 경로로 페이지 유형 검증
 function resolveTypeFromPath (relativePath: string): PageType {
@@ -59,26 +61,9 @@ function buildRoutes (contentDir: string, files: string[]): RouteEntry[] {
   })
 }
 
-function toOutputFilePath (outDir: string, contentDir: string, filePath: string): string {
-  const relativePath = path.relative(contentDir, filePath)
-  const htmlPath = relativePath.replace(/\.mdx$/, '.html')
-  return path.join(outDir, htmlPath)
-}
-
-function renderDocumentHtml (title: string, description: string, baseURL: string, bodyHtml: string): string {
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="${description}">
-  <base href="${baseURL}">
-  <title>${title}</title>
-</head>
-<body>
-${bodyHtml}
-</body>
-</html>`
+export interface BuildResult {
+  successCount: number
+  failCount: number
 }
 
 /**
@@ -88,7 +73,7 @@ ${bodyHtml}
  *
  * @returns {Promise<{successCount: number, failCount: number}>} The number of successfully built pages and failed builds.
 */
-async function build () {
+export async function runBuildPipeline (): Promise<BuildResult> {
   const config = await loadConfig()
 
   const cwd = process.cwd()
@@ -106,35 +91,32 @@ async function build () {
 
   for (const route of routes) {
     try {
-      const source = await fs.readFile(route.filePath, 'utf-8')
-      const { default: MDXContent } = await evaluate(source, {
-        ...runtime,
-        baseUrl: pathToFileURL(route.filePath)
-      })
+      const renderContext: RenderContext = {
+        config,
+        contentDir,
+        outDir,
+        route,
+        theme
+      }
 
-      const articleTitle = path.basename(route.filePath, '.mdx')
-
-      // 현재로는 home 페이지에선 siteTitle, article에선 articleTitle | siteTitle 형태 생성
-      // FIXME: 추후 페이지 유형별 세분화, 커스터마이징
-      const title = route.type === 'home'
-        ? config.siteTitle
-        : `${articleTitle} | ${config.siteTitle}`
-
-      // React 요소 생성 및 HTML 렌더링
-      const app = React.createElement(
-        theme.Layout,
-        { title, config, route },
-        React.createElement(
-          resolvePageComponent(theme, route.type),
-          null,
-          React.createElement(MDXContent, { components: theme.components })
-        )
-      )
-
-      const bodyHtml = renderToStaticMarkup(app)
-      const html = renderDocumentHtml(title, config.description, config.baseURL, bodyHtml)
-      const outputFilePath = toOutputFilePath(outDir, contentDir, route.filePath)
-      await fs.outputFile(outputFilePath, html)
+      let outputFilePath = ''
+      switch (route.type) {
+        case 'home':
+          outputFilePath = await renderHomePage(renderContext)
+          break
+        case 'posts':
+          outputFilePath = await renderPostsPage(renderContext)
+          break
+        case 'tags':
+          outputFilePath = await renderTagsPage(renderContext)
+          break
+        case 'article':
+          outputFilePath = await renderArticlePage(renderContext)
+          break
+        case '404':
+          outputFilePath = await renderNotFoundPage(renderContext)
+          break
+      }
 
       console.log(`[beul:build] Built [${route.type}]: ${outputFilePath}`)
       successCount += 1
@@ -148,5 +130,3 @@ async function build () {
   console.log(`[beul:build] Done. success=${successCount}, failed=${failCount}`)
   return { successCount, failCount }
 }
-
-export { build }
