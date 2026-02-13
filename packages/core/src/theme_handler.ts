@@ -2,11 +2,12 @@ import path from 'path'
 import React from 'react'
 import type { ComponentType } from 'react'
 
-import type { BeulTheme, ThemeLayoutProps } from './types/theme.js'
-import type { PageType } from './types/route.js'
+import type { BeulTheme, BeulThemeProps } from './types/theme.js'
+import type { PageType, RouteEntry } from './types/route.js'
+import type { BeulConfig } from './types/config.js'
 
 // Page Type
-type GenericPageComponent = ComponentType<{ children?: React.ReactNode }>
+type GenericPageComponent = ComponentType<{ beulConfig: BeulConfig, route: RouteEntry, children?: React.ReactNode }>
 
 function createFallbackPage (): GenericPageComponent {
   return ({ children }) => React.createElement(React.Fragment, null, children)
@@ -47,13 +48,13 @@ function resolveTheme (mod: unknown): BeulTheme {
   const components = root.components
 
   return {
-    Layout: typeof layout === 'function' ? layout as ComponentType<ThemeLayoutProps> : fallback.Layout,
+    Layout: typeof layout === 'function' ? layout as ComponentType<BeulThemeProps> : fallback.Layout,
     pages: {
-      Home: typeof pages.Home === 'function' ? pages.Home as GenericPageComponent : fallback.pages.Home,
-      Posts: typeof pages.Posts === 'function' ? pages.Posts as GenericPageComponent : fallback.pages.Posts,
-      Tags: typeof pages.Tags === 'function' ? pages.Tags as GenericPageComponent : fallback.pages.Tags,
-      Article: typeof pages.Article === 'function' ? pages.Article as GenericPageComponent : fallback.pages.Article,
-      NotFound: typeof pages.NotFound === 'function' ? pages.NotFound as GenericPageComponent : fallback.pages.NotFound
+      Home: typeof pages.Home === 'function' ? pages.Home as ComponentType<BeulThemeProps> : fallback.pages.Home,
+      Posts: typeof pages.Posts === 'function' ? pages.Posts as ComponentType<BeulThemeProps> : fallback.pages.Posts,
+      Tags: typeof pages.Tags === 'function' ? pages.Tags as ComponentType<BeulThemeProps> : fallback.pages.Tags,
+      Article: typeof pages.Article === 'function' ? pages.Article as ComponentType<BeulThemeProps> : fallback.pages.Article,
+      NotFound: typeof pages.NotFound === 'function' ? pages.NotFound as ComponentType<BeulThemeProps> : fallback.pages.NotFound
     },
     components: isRecord(components) ? components as Record<string, ComponentType<unknown>> : {}
   }
