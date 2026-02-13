@@ -1,15 +1,5 @@
-import React from 'react'
+import type { ThemeProps } from './types.js'
 
-type PostProps = {
-  title: string
-  children?: React.ReactNode
-}
-
-export function Post ({ title, children }: PostProps) {
-  return (
-    <article className="post">
-      <h2>{title}</h2>
-      <section>{children}</section>
-    </article>
-  )
+export function Post ({ children }: ThemeProps) {
+  return <article>{children}</article>
 }

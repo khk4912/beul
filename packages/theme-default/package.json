@@ -7,13 +7,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "vite build && vite build -c vite.config.client.ts && tsc -p tsconfig.build.json --emitDeclarationOnly",
+    "build": "vite build && tsc -p tsconfig.build.json --emitDeclarationOnly",
     "lint": "eslint .",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "exports": {
-    ".": "./dist/index.js",
-    "./client": "./dist/client.js"
+    ".": "./dist/index.js"
   },
   "files": [
     "dist"

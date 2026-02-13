@@ -7,7 +7,7 @@ import { evaluate } from '@mdx-js/mdx'
 import { renderToStaticMarkup } from 'react-dom/server'
 import * as runtime from 'react/jsx-runtime'
 
-import { resolvePageComponent } from '../theme_handler.js'
+import { resolvePageComponent } from './theme_handler.js'
 import type { BeulTheme } from '../types/theme.js'
 import type { BeulConfig } from '../types/config.js'
 import type { RouteEntry } from '../types/route.js'
@@ -73,6 +73,7 @@ async function renderPage (context: RenderContext): Promise<string> {
   return outputFilePath
 }
 
+// TODO: 각 페이지 유형별로 별도 렌더러?
 export async function renderHomePage (context: RenderContext): Promise<string> {
   return await renderPage(context)
 }

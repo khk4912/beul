@@ -2,7 +2,7 @@ import fs from 'fs-extra'
 import path from 'path'
 
 import { loadConfig } from '../config.js'
-import { loadTheme } from '../theme_handler.js'
+import { loadTheme } from './theme_handler.js'
 import type { PageType, RouteEntry } from '../types/route.js'
 import {
   renderArticlePage,
