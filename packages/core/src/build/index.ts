@@ -6,8 +6,8 @@ import type { BeulConfig } from '../types/config.js'
  * Beul 빌드 entrypoint
  */
 type BuildParams = {
-  configPath?: string
-  overwrites?: Partial<BeulConfig>
+  configPath?: string | undefined
+  overwrites?: Partial<BeulConfig> | undefined
 }
 export async function build ({
   configPath,

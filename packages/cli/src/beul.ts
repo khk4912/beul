@@ -115,10 +115,13 @@ program
   .option('--config <dir>', 'Config file path (default: beul.config.ts)')
   .action(async (options?: BuildOptions) => {
     const originalCwd = process.cwd()
-
     const targetRoot = path.resolve(options?.root ?? originalCwd)
-    const outDir = options?.outDir ?? 'dist'
-    const configPath = options?.config ?? 'beul.config.ts'
+    const buildParams: Parameters<typeof build>[0] = {}
+
+    if (options?.config !== undefined) buildParams.configPath = options.config
+    if (options?.outDir !== undefined) buildParams.overwrites = { outDir: options.outDir }
+
+    await build(buildParams)
 
     console.log(chalk.bold('🛠️  Building the Beul project...\n'))
     console.log(chalk.dim(`  Project Root: ${targetRoot}\n`))
@@ -126,7 +129,7 @@ program
     try {
       await fs.access(targetRoot)
       process.chdir(targetRoot)
-      await build({ configPath, overwrites: { outDir } })
+      await build(buildParams)
     } finally {
       process.chdir(originalCwd)
     }

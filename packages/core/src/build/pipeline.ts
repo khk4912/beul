@@ -91,6 +91,8 @@ export async function runBuildPipeline (options: BuildOptions = {}): Promise<Bui
     ...options.overwrites
   }
 
+  console.debug(`[beul:build] Loaded config: ${JSON.stringify(config, null, 2)}`)
+
   const contentDir = path.resolve(cwd, config.contentDir)
   const outDir = path.resolve(cwd, config.outDir)
 
