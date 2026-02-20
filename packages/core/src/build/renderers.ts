@@ -34,9 +34,9 @@ interface LoadedMdxContent {
   MDXContent: MdxContentComponent
 }
 
-interface RenderPageOptions {
+interface RenderPageOptions<T extends Record<string, unknown>> {
   title: string
-  pageProps?: Record<string, unknown>
+  pageProps?: T
   MDXContent: MdxContentComponent
 }
 
@@ -60,7 +60,7 @@ async function loadMdxContent (filePath: string): Promise<LoadedMdxContent> {
   return { articleMeta, MDXContent }
 }
 
-async function renderPageToFile (context: RenderContext, options: RenderPageOptions): Promise<string> {
+async function renderPageToFile<T extends Record<string, unknown> > (context: RenderContext, options: RenderPageOptions<T>): Promise<string> {
   const { config, route, theme, contentDir, outDir } = context
   const { title, pageProps, MDXContent } = options
 
@@ -120,11 +120,19 @@ export async function renderArticlePage (context: RenderContext): Promise<string
   const { articleMeta, MDXContent } = await loadMdxContent(context.route.filePath)
 
   const title = articleMeta.title ?? path.basename(context.route.filePath, '.mdx')
-  const date = articleMeta.date ?? (await fs.stat(context.route.filePath)).mtime.toISOString()
+  const { mtime } = await fs.stat(context.route.filePath)
 
-  return await renderPageToFile(context, {
+  const pad2 = (n: number) => String(n).padStart(2, '0')
+  const fallbackDate = `${mtime.getFullYear()}-${pad2(mtime.getMonth() + 1)}-${pad2(mtime.getDate())} ${pad2(mtime.getHours())}:${pad2(mtime.getMinutes())}:${pad2(mtime.getSeconds())}`
+
+  const pageProps: ArticleMeta = {
+    ...articleMeta,
+    date: articleMeta.date ?? fallbackDate
+  }
+
+  return await renderPageToFile<ArticleMeta>(context, {
     title,
-    pageProps: { ...articleMeta, date },
+    pageProps,
     MDXContent
   })
 }

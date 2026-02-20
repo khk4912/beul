@@ -67,7 +67,6 @@ export function Layout ({ beulConfig, route, children }: ThemeProps) {
         </div>
       </header>
       <main className='container content'>
-        {route.type !== 'home' ? <h2 className='page-title'>{pageTitle}</h2> : null}
         <div className='mdx-body'>{children}</div>
       </main>
       <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />

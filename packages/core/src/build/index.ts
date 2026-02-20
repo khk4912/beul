@@ -1,5 +1,4 @@
-import { runBuildPipeline } from './pipeline.js'
-import type { BuildOptions } from './pipeline.js'
+import { runBuildPipeline, type BuildOptions } from './pipeline.js'
 import type { BeulConfig } from '../types/config.js'
 
 /**

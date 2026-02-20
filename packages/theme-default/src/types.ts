@@ -28,3 +28,10 @@ export interface DocumentProps {
   baseURL: string
   children?: ReactNode
 }
+
+export interface ArticleProps extends ThemeProps {
+  title: string
+  description: string
+  date?: string
+  tags?: string[]
+}
