@@ -46,6 +46,12 @@ function toOutputFilePath (outDir: string, contentDir: string, filePath: string)
   return path.join(outDir, htmlPath)
 }
 
+/**
+ * MDX 파일을 불러오고, frontmatter 메타데이터를 파싱하여 반환합니다.
+ *
+ * @param filePath 파일 경로
+ * @returns
+ */
 async function loadMdxContent (filePath: string): Promise<LoadedMdxContent> {
   const source = await fs.readFile(filePath, 'utf-8')
   const { frontMatter, body } = parseFrontMatter(source)
@@ -60,6 +66,22 @@ async function loadMdxContent (filePath: string): Promise<LoadedMdxContent> {
   return { articleMeta, MDXContent }
 }
 
+/**
+ * 문서를 조합하여 HTML 파일로 렌더링합니다.
+ * 아래와 같은 방식으로 컴포넌트 합성이 이루어집니다.
+ *
+ * ```jsx
+ * <Document ...>
+ *  <Layout ...>
+ *   <Home || Posts || Tags || Article ... />
+ *  </Layout>
+ * </Document>
+ * ```
+ *
+ * @param context
+ * @param options
+ * @returns
+ */
 async function renderPageToFile<T extends Record<string, unknown> > (context: RenderContext, options: RenderPageOptions<T>): Promise<string> {
   const { config, route, theme, contentDir, outDir } = context
   const { title, pageProps, MDXContent } = options
@@ -116,6 +138,9 @@ export async function renderTagsPage (context: RenderContext): Promise<string> {
   return await renderDefaultPage(context)
 }
 
+/**
+ * router type이 article일 경우 렌더링
+ */
 export async function renderArticlePage (context: RenderContext): Promise<string> {
   const { articleMeta, MDXContent } = await loadMdxContent(context.route.filePath)
 
