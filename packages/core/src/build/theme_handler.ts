@@ -1,4 +1,6 @@
 import path from 'path'
+import { createRequire } from 'module'
+import { pathToFileURL } from 'url'
 import React from 'react'
 import type { ComponentType } from 'react'
 
@@ -76,18 +78,32 @@ export function resolvePageComponent (theme: BeulTheme, pageType: PageType): Gen
 
 /**
  * 테마를 불러옵니다.
+ * - file://로 시작하는 경우, 해당 경로에서 직접 import 시도
+ * - 그 외의 경우, require.resolve로 경로를 찾은 후 import 시도
+ * - 실패할 경우, fallback 테마
  */
 export async function loadTheme (themeName: string = '@beul-ssg/theme-default', cwd = process.cwd()): Promise<BeulTheme> {
   try {
-    const mod = await import(themeName) as unknown
-    return resolveTheme(mod)
-  } catch {
-    const localThemePath = path.resolve(cwd, themeName)
-    try {
-      const mod = await import(localThemePath) as unknown
+    // file:// 형태일 경우, 경로 직접 import
+    if (themeName.startsWith('file:')) {
+      const mod = await import(themeName) as unknown
       return resolveTheme(mod)
-    } catch {
-      return resolveTheme({})
     }
+
+    // 그 외 경우, package.json 기반으로 require.resolve 사용
+    const requireFromCwd = createRequire(path.join(cwd, 'package.json'))
+    const specifier = path.isAbsolute(themeName)
+      ? themeName
+      : themeName.startsWith('.')
+        ? path.resolve(cwd, themeName)
+        : themeName
+    const resolvedPath = requireFromCwd.resolve(specifier)
+    const mod = await import(pathToFileURL(resolvedPath).href) as unknown
+
+    return resolveTheme(mod)
+  } catch (error) {
+    console.warn(`[beul:theme] Failed to load theme "${themeName}" from "${cwd}". Falling back to built-in fallback theme.`)
+    console.warn(error instanceof Error ? error.message : String(error))
+    return resolveTheme({})
   }
 }
