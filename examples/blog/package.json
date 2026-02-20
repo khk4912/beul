@@ -2,8 +2,22 @@
   "name": "@beul-ssg/example-blog",
   "private": true,
   "type": "module",
+  "scripts": {
+    "build": "tsc -p ./tsconfig.build.json",
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
   "dependencies": {
-    "beul": "workspace:*",
-    "@beul-ssg/theme-default": "workspace:*"
+    "@beul-ssg/theme-default": "workspace:*",
+    "@beul-ssg/core": "workspace:*",
+    "beul": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.2",
+    "eslint": "^9.39.2",
+    "globals": "^17.3.0",
+    "neostandard": "^0.12.2",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.55.0"
   }
 }
