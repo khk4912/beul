@@ -21,3 +21,10 @@ export interface ThemeProps {
   route: RouteEntry
   children?: ReactNode
 }
+
+export interface DocumentProps {
+  title: string
+  description: string
+  baseURL: string
+  children?: ReactNode
+}

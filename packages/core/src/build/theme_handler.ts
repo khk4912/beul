@@ -4,7 +4,7 @@ import { pathToFileURL } from 'url'
 import React from 'react'
 import type { ComponentType } from 'react'
 
-import type { BeulTheme, BeulThemeProps } from '../types/theme.js'
+import type { BeulDocumentProps, BeulTheme, BeulThemeProps } from '../types/theme.js'
 import type { PageType, RouteEntry } from '../types/route.js'
 import type { BeulConfig } from '../types/config.js'
 
@@ -30,7 +30,29 @@ function isRecord (value: unknown): value is Record<string, unknown> {
  */
 function resolveTheme (mod: unknown): BeulTheme {
   const fallbackPage = createFallbackPage()
+
+  const fallbackDocument: ComponentType<BeulDocumentProps> = ({
+    title,
+    description,
+    baseURL,
+    children
+  }) => React.createElement(
+    'html',
+    { lang: 'en' },
+    React.createElement(
+      'head',
+      null,
+      React.createElement('meta', { charSet: 'UTF-8' }),
+      React.createElement('meta', { name: 'viewport', content: 'width=device-width, initial-scale=1.0' }),
+      React.createElement('meta', { name: 'description', content: description }),
+      React.createElement('base', { href: baseURL }),
+      React.createElement('title', null, title)
+    ),
+    React.createElement('body', null, children)
+  )
+
   const fallback: BeulTheme = {
+    Document: fallbackDocument,
     Layout: ({ children }) => React.createElement(React.Fragment, null, children),
     pages: {
       Home: fallbackPage,
@@ -45,11 +67,13 @@ function resolveTheme (mod: unknown): BeulTheme {
   if (!isRecord(mod)) return fallback
   const root = isRecord(mod.default) ? mod.default : mod
 
+  const document = root.Document
   const layout = root.Layout
   const pages = isRecord(root.pages) ? root.pages : {}
   const components = root.components
 
   return {
+    Document: typeof document === 'function' ? document as ComponentType<BeulDocumentProps> : fallback.Document,
     Layout: typeof layout === 'function' ? layout as ComponentType<BeulThemeProps> : fallback.Layout,
     pages: {
       Home: typeof pages.Home === 'function' ? pages.Home as ComponentType<BeulThemeProps> : fallback.pages.Home,
