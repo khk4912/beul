@@ -79,12 +79,19 @@ export function defineConfig (config: Partial<BeulConfig>): Partial<BeulConfig> 
   return config
 }
 
-export async function loadConfig (cwd = process.cwd()): Promise<BeulConfig> {
-  const configPath = await findConfig(cwd)
-  const ts = isTS(configPath)
+interface LoadConfigOptions {
+  cwd?: string
+  configPath?: string
+}
 
-  if (ts) { return await loadTSConfig(configPath) }
-  return await loadJSConfig(configPath)
+export async function loadConfig ({ cwd = process.cwd(), configPath }: LoadConfigOptions = {}): Promise<BeulConfig> {
+  const resolvedConfigPath = configPath === undefined
+    ? await findConfig(cwd)
+    : path.resolve(cwd, configPath)
+  const ts = isTS(resolvedConfigPath)
+
+  if (ts) { return await loadTSConfig(resolvedConfigPath) }
+  return await loadJSConfig(resolvedConfigPath)
 }
 
 async function findConfig (cwd: string): Promise<string> {

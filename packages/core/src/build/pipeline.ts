@@ -3,6 +3,7 @@ import path from 'path'
 
 import { loadConfig } from '../config.js'
 import { loadTheme } from './theme_handler.js'
+import type { BeulConfig } from '../types/config.js'
 import type { PageType, RouteEntry } from '../types/route.js'
 import {
   renderArticlePage,
@@ -66,17 +67,30 @@ export interface BuildResult {
   failCount: number
 }
 
+export interface BuildOptions {
+  configPath?: string
+  overwrites?: Partial<BeulConfig>
+}
+
 /**
  * Build the static site based on the configuration and content files.
  * This function processes MDX files, converts them to HTML, and outputs them
  * to the specified output directory.
  *
- * @returns {Promise<{successCount: number, failCount: number}>} The number of successfully built pages and failed builds.
+ * @returns {Promise<BuildResult>} The number of successfully built pages and failed builds.
 */
-export async function runBuildPipeline (): Promise<BuildResult> {
-  const config = await loadConfig()
-
+export async function runBuildPipeline (options: BuildOptions = {}): Promise<BuildResult> {
+  const { configPath } = options
   const cwd = process.cwd()
+  const loadConfigOptions: { cwd: string, configPath?: string } = { cwd }
+  if (configPath !== undefined) loadConfigOptions.configPath = configPath
+
+  const loadedConfig = await loadConfig(loadConfigOptions)
+  const config: BeulConfig = {
+    ...loadedConfig,
+    ...options.overwrites
+  }
+
   const contentDir = path.resolve(cwd, config.contentDir)
   const outDir = path.resolve(cwd, config.outDir)
 

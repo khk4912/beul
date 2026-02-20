@@ -1,12 +1,15 @@
 #!/usr/bin/env node
+import chalk from 'chalk'
 
-import fs from 'fs/promises'
 import { input } from '@inquirer/prompts'
 import { Command } from 'commander'
-import chalk from 'chalk'
+
+import fs from 'fs/promises'
 import path from 'path'
-import pkg from '../package.json' with { type: 'json'}
 import { exit } from 'process'
+
+import pkg from '../package.json' with { type: 'json' }
+import { build } from '@beul-ssg/core'
 
 const VERSION = pkg.version
 const program = new Command()
@@ -15,6 +18,11 @@ const CLI_ROOT = path.resolve(import.meta.dirname, '../')
 const TEMPLATE_DIR = path.join(CLI_ROOT, 'template')
 
 type PackageManager = 'npm' | 'pnpm' | 'yarn' | 'bun'
+type BuildOptions = {
+  root?: string
+  outDir?: string
+  config?: string
+}
 
 // pnpm create, npx 등으로 실행 시 pkg manager 감지
 function getUserAgent (): PackageManager {
@@ -33,12 +41,28 @@ program
   .description('Beul CLI')
   .version(VERSION)
 
+type BeulInitOption = {
+  root?: string
+}
+
 program
   .command('init')
   .description('Create a new Beul project')
   .argument('[project-name]', 'Name of the new Beul project')
-  .action(async (projectName?: string) => {
+  .option('--root <dir>', 'Project root directory')
+  .action(async (projectName?: string, options?: BeulInitOption) => {
     try {
+      if (options?.root) {
+        const targetDir = path.resolve(options.root)
+        try {
+          await fs.access(targetDir)
+          console.log(chalk.red(`\n❌ The directory "${targetDir}" already exists. Please choose a different name or remove the existing directory.`))
+          exit(1)
+        } catch { }
+        await fs.mkdir(targetDir, { recursive: true })
+        process.chdir(targetDir)
+      }
+
       console.log(chalk.bold(`📝 Beul 블 v${VERSION}\n`))
 
       const name = projectName ??
@@ -85,6 +109,27 @@ program
 
 program
   .command('build')
-  .description('TBD')
+  .description('Build a Beul project')
+  .option('--root <dir>', 'Project root directory')
+  .option('--outDir <dir>', 'Output directory (default: dist)')
+  .option('--config <dir>', 'Config file path (default: beul.config.ts)')
+  .action(async (options?: BuildOptions) => {
+    const originalCwd = process.cwd()
+
+    const targetRoot = path.resolve(options?.root ?? originalCwd)
+    const outDir = options?.outDir ?? 'dist'
+    const configPath = options?.config ?? 'beul.config.ts'
+
+    console.log(chalk.bold('🛠️  Building the Beul project...\n'))
+    console.log(chalk.dim(`  Project Root: ${targetRoot}\n`))
+
+    try {
+      await fs.access(targetRoot)
+      process.chdir(targetRoot)
+      await build({ configPath, overwrites: { outDir } })
+    } finally {
+      process.chdir(originalCwd)
+    }
+  })
 
 await program.parseAsync(process.argv)
