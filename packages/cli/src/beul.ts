@@ -9,7 +9,7 @@ import path from 'path'
 import { exit } from 'process'
 
 import pkg from '../package.json' with { type: 'json' }
-import { build } from '@beul-ssg/core'
+import { build, type BeulConfig } from '@beul-ssg/core'
 
 const VERSION = pkg.version
 const program = new Command()
@@ -116,12 +116,14 @@ program
   .action(async (options?: BuildOptions) => {
     const originalCwd = process.cwd()
     const targetRoot = path.resolve(options?.root ?? originalCwd)
+
     const buildParams: Parameters<typeof build>[0] = {}
+    const overwrites: Partial<BeulConfig> = {}
 
     if (options?.config !== undefined) buildParams.configPath = options.config
-    if (options?.outDir !== undefined) buildParams.overwrites = { outDir: options.outDir }
+    if (options?.outDir !== undefined) overwrites.outDir = options.outDir
 
-    await build(buildParams)
+    if (Object.keys(overwrites).length > 0) buildParams.overwrites = overwrites
 
     console.log(chalk.bold('🛠️  Building the Beul project...\n'))
     console.log(chalk.dim(`  Project Root: ${targetRoot}\n`))
